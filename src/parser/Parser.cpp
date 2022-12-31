@@ -14,7 +14,7 @@ Token* Parser::m_Advance()
 	m_TokenIndex++;
 	if (m_TokenIndex < m_Tokens.size()) {
 		m_CurrentToken = &m_Tokens.at(m_TokenIndex);
-		
+
 	}
 	return m_CurrentToken;
 }
@@ -42,11 +42,12 @@ void Parser::expression(std::shared_ptr<Node>outNode)
 
 		left = std::make_shared<Node>(BINARY_OP_NODE, left, opTok, right);
 
-		outNode->type = BINARY_OP_NODE;
-		outNode->left = left;
-		outNode->value = Token(TOKEN_TYPE::INVALID_TOKEN, m_CurrentToken->startPosition);
-		outNode->right = nullptr;
+
 	}
+	outNode->type = BINARY_OP_NODE;
+	outNode->left = left;
+	outNode->value = Token(TOKEN_TYPE::INVALID_TOKEN, m_CurrentToken->startPosition);
+	outNode->right = nullptr;
 }
 
 void Parser::term(std::shared_ptr<Node>outNode)
@@ -64,26 +65,53 @@ void Parser::term(std::shared_ptr<Node>outNode)
 
 		left = std::make_shared<Node>(BINARY_OP_NODE, left, opTok, right);
 
-		outNode->type = BINARY_OP_NODE;
-		outNode->left = left;
-		outNode->value = Token(TOKEN_TYPE::INVALID_TOKEN,m_CurrentToken->startPosition);
-		outNode->right = nullptr;
 	}
+	outNode->type = BINARY_OP_NODE;
+	outNode->left = left;
+	outNode->value = Token(TOKEN_TYPE::INVALID_TOKEN, m_CurrentToken->startPosition);
+	outNode->right = nullptr;
 }
 
 void Parser::factor(std::shared_ptr<Node> outNode)
 {
 	Token token = *m_CurrentToken;
 
-	if (token.type == TOKEN_TYPE::NUMBER) {
+	if (token.type == TOKEN_TYPE::PLUS || token.type == TOKEN_TYPE::MINUS) {
+		m_Advance();
+		std::shared_ptr<Node> number = std::make_shared<Node>(0, *m_CurrentToken);
+		factor(number);
+
+		outNode->type = UNARY_OP_NODE;
+		outNode->left = number;
+		outNode->value = token;
+		outNode->right = nullptr;
+	}
+	else if (token.type == TOKEN_TYPE::L_PAREN) {
+		m_Advance();
+		std::shared_ptr<Node> expr = std::make_shared<Node>(0, *m_CurrentToken);
+		expression(expr);
+		//std::cout << *expr << std::endl;
+		if (m_CurrentToken->type == TOKEN_TYPE::R_PAREN) {
+			m_Advance();
+			outNode->left = expr->left;
+			outNode->right = expr->right;
+			outNode->type = expr->type;
+			outNode->value = expr->value;
+		}
+		else {
+			Error::InvalidSyntaxError(TOKEN_TYPE::R_PAREN, token.type, token.startPosition);
+		}
+	}
+
+	else if (token.type == TOKEN_TYPE::NUMBER) {
 		m_Advance();
 		outNode->type = NUMBER_NODE;
-		outNode->value = token;
 		outNode->left = nullptr;
+		outNode->value = token;
 		outNode->right = nullptr;
 	}
 	else {
-		Error::InvalidSyntaxError(TOKEN_TYPE::NUMBER,token.type, token.startPosition);
+		Error::InvalidSyntaxError(TOKEN_TYPE::NUMBER, token.type, token.startPosition);
 	}
 }
 

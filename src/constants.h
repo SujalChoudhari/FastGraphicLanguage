@@ -42,5 +42,6 @@ const std::string KEYWORDS[] = {
 // NODE TYPES
 enum {
 	NUMBER_NODE,
-	BINARY_OP_NODE
+	BINARY_OP_NODE,
+	UNARY_OP_NODE
 };

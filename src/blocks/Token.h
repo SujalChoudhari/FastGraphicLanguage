@@ -27,14 +27,12 @@ struct Token {
 
 	friend std::ostream& operator<<(std::ostream& stream, const Token& t) {
 		if (t.type == TOKEN_TYPE::INVALID_TOKEN) return stream;
-		stream << "(";
-		if (t.value.empty()) {
-			stream << t.type << ")";
-		}
-		else
-		{
-			stream << t.type << ": " << t.value << ")";
-		}
+
+		stream << "(" << t.type;
+
+		if (!t.value.empty()) stream <<":" << t.value;
+		stream << ")";
+
 		return stream;
 	}
 };

@@ -20,15 +20,15 @@ struct Node {
 
 
 	friend std::ostream& operator<<(std::ostream& stream, const Node& node) {
-
 		stream << "{";
-		if (node.left.get() != nullptr) 		// if there is a left node
-			stream << *node.left;
-		if (node.value.type != TOKEN_TYPE::INVALID_TOKEN) 	// if there is a token 
-			stream << " " << node.value;
-		if (node.right != nullptr) 			// if there is a right node
-			stream << " " << *node.right.get();
+		if (node.left != nullptr) {
+			stream << *node.left.get();
+		}
+		stream << node.value;
 
+		if (node.right != nullptr) {
+			stream << *node.right.get();
+		}
 		stream << "}";
 		return stream;
 

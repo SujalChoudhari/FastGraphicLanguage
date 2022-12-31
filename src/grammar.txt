@@ -2,7 +2,9 @@
 
 expression -> term ((PLUS|MINUS) term):*
 term -> factor ((MIL|DIV) factor):*
-factor -> number
+factor -> number |
+		(PLUS|MINUS) factor |
+		"(" expression ")"
 
 number -> [0-9]:+ ("." [0-9]):*
 
