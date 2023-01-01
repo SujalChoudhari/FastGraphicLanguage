@@ -7,8 +7,12 @@
 // Error Types
 
 struct Error {
-	unsigned int count= 0;
-	static void InvalidCharacterError(char character, const Position& position);
-	static void MultipleDecimalError(const Position& position);
-	static void InvalidSyntaxError(std::string expected, std::string got, const Position& position);
+	unsigned int count = 0;
+	void InvalidCharacterError(char character, const Position& position);
+	void MultipleDecimalError(const Position& position);
+	void InvalidSyntaxError(std::string expected, std::string got, const Position& startPosition, const Position& endPosition);
+
+
+private:
+	void showErrorInLine(const Position& startPosition, const Position& endPosition);
 };

@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-#include "../constants.h"
+#include "../Constants.h"
 #include "../debug/Position.h"
 
 

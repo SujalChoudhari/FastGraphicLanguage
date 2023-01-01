@@ -45,8 +45,7 @@ void Lexer::m_Tokenize()
 			m_Advance();
 		}
 		else if (m_CurrentChar == '*') {
-			m_Tokens.emplace_back(TOKEN_TYPE::MULTIPLY, "", m_Position);
-			m_Advance();
+			m_TokenizeStars();
 		}
 		else if (m_CurrentChar == '/') {
 			m_Tokens.emplace_back(TOKEN_TYPE::DEVIDE, "", m_Position);
@@ -78,7 +77,7 @@ void Lexer::m_Tokenize()
 			m_Advance();
 		}
 		else {
-			Error::InvalidCharacterError(m_CurrentChar, m_Position);
+			m_Error.InvalidCharacterError(m_CurrentChar, m_Position);
 			m_Advance();
 		}
 	}
@@ -94,7 +93,7 @@ void Lexer::m_TokenizeDigits()
 	while (SUPPORTED_NUMBERS.find(m_CurrentChar) != std::string::npos) {
 		if (m_CurrentChar == '.') {
 			if (decimalCount == 1) {
-				Error::MultipleDecimalError(m_Position);
+				m_Error.MultipleDecimalError(m_Position);
 			}
 			else {
 				decimalCount++;
@@ -107,7 +106,7 @@ void Lexer::m_TokenizeDigits()
 
 		m_Advance();
 	}
-	m_Tokens.emplace_back(TOKEN_TYPE::NUMBER, number, m_Position);
+	m_Tokens.emplace_back(TOKEN_TYPE::NUMBER, number,startPos, m_Position);
 }
 
 void Lexer::m_TokenizeAlphabets(void)
@@ -121,22 +120,37 @@ void Lexer::m_TokenizeAlphabets(void)
 
 	for (std::string keyword : KEYWORDS) {
 		if (keyword == identifier) {
-			m_Tokens.emplace_back(TOKEN_TYPE::KEYWORD, identifier, startPos);
+			m_Tokens.emplace_back(TOKEN_TYPE::KEYWORD, identifier, startPos,m_Position);
 			return;
 		}
 	}
 
-	m_Tokens.emplace_back(TOKEN_TYPE::IDENTIFIER, identifier, startPos);
+	m_Tokens.emplace_back(TOKEN_TYPE::IDENTIFIER, identifier, startPos, m_Position);
 }
 
 void Lexer::m_TokenizeEquals(void)
 {
+	Position startPos = m_Position;
 	m_Advance();
 	if (m_CurrentChar == '=') {
-		m_Tokens.emplace_back(TOKEN_TYPE::EQUALS, "", m_Position);
+		m_Tokens.emplace_back(TOKEN_TYPE::EQUALS, "",startPos, m_Position);
 	}
 	else {
-		m_Tokens.emplace_back(TOKEN_TYPE::ASSIGNMENT, "", m_Position);
+		m_Tokens.emplace_back(TOKEN_TYPE::ASSIGNMENT, "",startPos, m_Position);
+	}
+	m_Advance();
+}
+
+
+void Lexer::m_TokenizeStars(void)
+{
+	Position startPos = m_Position;
+	m_Advance();
+	if (m_CurrentChar == '*') {
+		m_Tokens.emplace_back(TOKEN_TYPE::POWER, "", startPos, m_Position);
+	}
+	else {
+		m_Tokens.emplace_back(TOKEN_TYPE::MULTIPLY, "", startPos, m_Position);
 	}
 	m_Advance();
 }

@@ -7,6 +7,7 @@ Parser::Parser(std::vector<Token> tokens)
 	m_TokenIndex = -1;
 	m_CurrentToken = nullptr;
 	m_Advance();
+	m_Error = Error();
 }
 
 Token* Parser::m_Advance()
@@ -23,6 +24,9 @@ Node Parser::parse()
 {
 	std::shared_ptr<Node> result = std::make_shared<Node>(0, *m_CurrentToken);
 	expression(result);
+	while (result->left != nullptr && result->right == nullptr && result->value.type != TOKEN_TYPE::INVALID_TOKEN) {
+		result = result->left;
+	}
 
 	return *result.get();
 }
@@ -31,6 +35,9 @@ void Parser::expression(std::shared_ptr<Node>outNode)
 {
 	std::shared_ptr< Node >left = std::make_shared<Node>(0, *m_CurrentToken);
 	term(left);
+	while (left->left != nullptr && left->right == nullptr && left->value.type != TOKEN_TYPE::INVALID_TOKEN) {
+		left = left->left;
+	}
 
 	while (m_CurrentToken->type == TOKEN_TYPE::PLUS
 		|| m_CurrentToken->type == TOKEN_TYPE::MINUS) {
@@ -39,6 +46,10 @@ void Parser::expression(std::shared_ptr<Node>outNode)
 
 		std::shared_ptr<Node> right = std::make_shared< Node>(0, *m_CurrentToken);
 		term(right);
+
+		while (right->left != nullptr && right->right == nullptr && right->value.type != TOKEN_TYPE::INVALID_TOKEN) {
+			right = right->left;
+		}
 
 		left = std::make_shared<Node>(BINARY_OP_NODE, left, opTok, right);
 
@@ -90,7 +101,6 @@ void Parser::factor(std::shared_ptr<Node> outNode)
 		m_Advance();
 		std::shared_ptr<Node> expr = std::make_shared<Node>(0, *m_CurrentToken);
 		expression(expr);
-		//std::cout << *expr << std::endl;
 		if (m_CurrentToken->type == TOKEN_TYPE::R_PAREN) {
 			m_Advance();
 			outNode->left = expr->left;
@@ -99,7 +109,7 @@ void Parser::factor(std::shared_ptr<Node> outNode)
 			outNode->value = expr->value;
 		}
 		else {
-			Error::InvalidSyntaxError(TOKEN_TYPE::R_PAREN, token.type, token.startPosition);
+			m_Error.InvalidSyntaxError(TOKEN_TYPE::R_PAREN, m_CurrentToken->type, m_CurrentToken->startPosition, m_CurrentToken->endPosition);
 		}
 	}
 
@@ -111,7 +121,7 @@ void Parser::factor(std::shared_ptr<Node> outNode)
 		outNode->right = nullptr;
 	}
 	else {
-		Error::InvalidSyntaxError(TOKEN_TYPE::NUMBER, token.type, token.startPosition);
+		m_Error.InvalidSyntaxError(TOKEN_TYPE::NUMBER, token.type, token.startPosition, token.endPosition);
 	}
 }
 
