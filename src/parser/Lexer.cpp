@@ -48,7 +48,7 @@ void Lexer::m_Tokenize()
 			m_TokenizeStars();
 		}
 		else if (m_CurrentChar == '/') {
-			m_Tokens.emplace_back(TOKEN_TYPE::DEVIDE, "", m_Position);
+			m_Tokens.emplace_back(TOKEN_TYPE::DIVIDE, "", m_Position);
 			m_Advance();
 		}
 		else if (m_CurrentChar == '(') {
@@ -148,9 +148,9 @@ void Lexer::m_TokenizeStars(void)
 	m_Advance();
 	if (m_CurrentChar == '*') {
 		m_Tokens.emplace_back(TOKEN_TYPE::POWER, "", startPos, m_Position);
+		m_Advance();
 	}
 	else {
 		m_Tokens.emplace_back(TOKEN_TYPE::MULTIPLY, "", startPos, m_Position);
 	}
-	m_Advance();
 }

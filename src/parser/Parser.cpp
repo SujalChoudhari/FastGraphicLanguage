@@ -1,13 +1,13 @@
 #include "Parser.h"
 #include "../debug/Error.h"
 
-Parser::Parser(std::vector<Token> tokens)
+Parser::Parser(std::vector<Token> tokens,Error error)
 {
 	m_Tokens = tokens;
 	m_TokenIndex = -1;
 	m_CurrentToken = nullptr;
 	m_Advance();
-	m_Error = Error();
+	m_Error = error;
 }
 
 Token* Parser::m_Advance()
@@ -35,9 +35,7 @@ void Parser::expression(std::shared_ptr<Node>outNode)
 {
 	std::shared_ptr< Node >left = std::make_shared<Node>(0, *m_CurrentToken);
 	term(left);
-	while (left->left != nullptr && left->right == nullptr && left->value.type != TOKEN_TYPE::INVALID_TOKEN) {
-		left = left->left;
-	}
+
 
 	while (m_CurrentToken->type == TOKEN_TYPE::PLUS
 		|| m_CurrentToken->type == TOKEN_TYPE::MINUS) {
@@ -47,15 +45,13 @@ void Parser::expression(std::shared_ptr<Node>outNode)
 		std::shared_ptr<Node> right = std::make_shared< Node>(0, *m_CurrentToken);
 		term(right);
 
-		while (right->left != nullptr && right->right == nullptr && right->value.type != TOKEN_TYPE::INVALID_TOKEN) {
-			right = right->left;
-		}
+
 
 		left = std::make_shared<Node>(BINARY_OP_NODE, left, opTok, right);
 
 
 	}
-	outNode->type = BINARY_OP_NODE;
+	outNode->type = UNARY_OP_NODE;
 	outNode->left = left;
 	outNode->value = Token(TOKEN_TYPE::INVALID_TOKEN, m_CurrentToken->startPosition);
 	outNode->right = nullptr;
@@ -67,7 +63,7 @@ void Parser::term(std::shared_ptr<Node>outNode)
 	factor(left);
 
 	while (m_CurrentToken->type == TOKEN_TYPE::MULTIPLY
-		|| m_CurrentToken->type == TOKEN_TYPE::DEVIDE) {
+		|| m_CurrentToken->type == TOKEN_TYPE::DIVIDE) {
 		Token opTok = *m_CurrentToken;
 		m_Advance();
 
@@ -77,7 +73,7 @@ void Parser::term(std::shared_ptr<Node>outNode)
 		left = std::make_shared<Node>(BINARY_OP_NODE, left, opTok, right);
 
 	}
-	outNode->type = BINARY_OP_NODE;
+	outNode->type = UNARY_OP_NODE;
 	outNode->left = left;
 	outNode->value = Token(TOKEN_TYPE::INVALID_TOKEN, m_CurrentToken->startPosition);
 	outNode->right = nullptr;

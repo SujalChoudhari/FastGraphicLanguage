@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <fstream>
-
+#include <string>
 
 class Reader {
 private:
@@ -11,6 +11,7 @@ private:
 	std::string m_Text;
 
 public:
+	Reader() = delete;
 	Reader(std::string filename)
 		:m_Filename(filename)
 	{

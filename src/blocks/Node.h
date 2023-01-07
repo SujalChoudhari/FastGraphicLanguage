@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <iostream>
-
+#include "Token.h"
 
 struct Node {
 	int type;

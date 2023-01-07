@@ -11,7 +11,7 @@ private:
 	Error m_Error;
 
 public:
-	Parser(std::vector<Token> tokens);
+	Parser(std::vector<Token> tokens,Error error);
 	Node parse();
 
 private:

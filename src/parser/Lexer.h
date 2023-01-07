@@ -20,9 +20,9 @@ private:
 
 
 public:
-	Lexer(std::string filename, std::string text)
+	Lexer(std::string filename, std::string text,Error error)
 		:filename(filename), text(text), m_Position({ filename,text, 1, 0, 0 }) {
-		m_Error = Error();
+		m_Error = error;
 		m_Advance();
 	}
 

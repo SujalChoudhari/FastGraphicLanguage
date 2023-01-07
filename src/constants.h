@@ -12,7 +12,7 @@ namespace TOKEN_TYPE {
 	const std::string R_BRACE		= "R_BRACE";
 	const std::string MULTIPLY		= "MULTIPLY";
 	const std::string POWER			= "POWER";
-	const std::string DEVIDE		= "DEVIDE";
+	const std::string DIVIDE		= "DEVIDE";
 	const std::string PLUS			= "PLUS";
 	const std::string MINUS			= "MINUS";
 	const std::string KEYWORD		= "KEYWORD";
