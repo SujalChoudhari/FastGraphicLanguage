@@ -1,7 +1,7 @@
 #include "Parser.h"
 #include "../debug/Error.h"
 
-Parser::Parser(std::vector<Token> tokens,Error error)
+Parser::Parser(std::vector<Token> tokens, Error error)
 {
 	m_Tokens = tokens;
 	m_TokenIndex = -1;
@@ -33,6 +33,8 @@ Node Parser::parse()
 
 void Parser::expression(std::shared_ptr<Node>outNode)
 {
+	if (!m_Error.IsSafe()) return;
+
 	std::shared_ptr< Node >left = std::make_shared<Node>(0, *m_CurrentToken);
 	term(left);
 
@@ -59,6 +61,8 @@ void Parser::expression(std::shared_ptr<Node>outNode)
 
 void Parser::term(std::shared_ptr<Node>outNode)
 {
+	if (!m_Error.IsSafe()) return;
+
 	std::shared_ptr<Node >left = std::make_shared<Node>(0, *m_CurrentToken);
 	factor(left);
 
@@ -81,6 +85,8 @@ void Parser::term(std::shared_ptr<Node>outNode)
 
 void Parser::factor(std::shared_ptr<Node> outNode)
 {
+	if (!m_Error.IsSafe()) return;
+
 	Token token = *m_CurrentToken;
 
 	if (token.type == TOKEN_TYPE::PLUS || token.type == TOKEN_TYPE::MINUS) {
@@ -93,7 +99,53 @@ void Parser::factor(std::shared_ptr<Node> outNode)
 		outNode->value = token;
 		outNode->right = nullptr;
 	}
-	else if (token.type == TOKEN_TYPE::L_PAREN) {
+	else {
+		std::shared_ptr<Node> number = std::make_shared<Node>(0, *m_CurrentToken);
+
+		power(number);
+
+		outNode->type = UNARY_OP_NODE;
+		outNode->left = number->left;
+		outNode->value = number->value;
+		outNode->right = number->right;
+	}
+}
+
+void Parser::power(std::shared_ptr<Node> outNode)
+{
+	if (!m_Error.IsSafe()) return;
+
+	std::shared_ptr< Node >left = std::make_shared<Node>(0, *m_CurrentToken);
+	atom(left);
+
+
+	while (m_CurrentToken->type == TOKEN_TYPE::POWER) {
+		Token opTok = *m_CurrentToken;
+		m_Advance();
+
+		std::shared_ptr<Node> right = std::make_shared< Node>(0, *m_CurrentToken);
+		factor(right);
+
+
+
+		left = std::make_shared<Node>(BINARY_OP_NODE, left, opTok, right);
+
+
+	}
+	outNode->type = UNARY_OP_NODE;
+	outNode->left = left;
+	outNode->value = Token(TOKEN_TYPE::INVALID_TOKEN, m_CurrentToken->startPosition);
+	outNode->right = nullptr;
+
+}
+
+void Parser::atom(std::shared_ptr<Node> outNode)
+{
+	if (!m_Error.IsSafe()) return;
+
+	Token token = *m_CurrentToken;
+
+	if (token.type == TOKEN_TYPE::L_PAREN) {
 		m_Advance();
 		std::shared_ptr<Node> expr = std::make_shared<Node>(0, *m_CurrentToken);
 		expression(expr);
@@ -117,7 +169,7 @@ void Parser::factor(std::shared_ptr<Node> outNode)
 		outNode->right = nullptr;
 	}
 	else {
-		m_Error.InvalidSyntaxError(TOKEN_TYPE::NUMBER, token.type, token.startPosition, token.endPosition);
+		m_Error.InvalidSyntaxError("PLUS|MINUS|NUMBER|L_PAREN", token.type, token.startPosition, token.endPosition);
 	}
 }
 

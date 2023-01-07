@@ -25,7 +25,6 @@ public:
 	Number(float value, Position Position)
 		:startPosition(startPosition), endPosition(startPosition), value(value) {}
 
-
 	void setPosition(Position start, Position end) {
 		startPosition = start;
 		endPosition = end;
@@ -43,5 +42,8 @@ public:
 	}
 	std::shared_ptr<Number> divide(Number other) {
 		return std::make_shared<Number>(value / other.value);
+	}
+	std::shared_ptr<Number> power(Number other) {
+		return std::make_shared<Number>(pow(value, other.value));
 	}
 };

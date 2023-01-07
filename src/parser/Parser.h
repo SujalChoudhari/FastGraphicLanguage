@@ -20,4 +20,6 @@ private:
 	void expression(std::shared_ptr<Node> outNode);
 	void term(std::shared_ptr<Node> outNode);
 	void factor(std::shared_ptr<Node> outNode);
+	void power(std::shared_ptr<Node> outNode);
+	void atom(std::shared_ptr<Node> outNode);
 };
