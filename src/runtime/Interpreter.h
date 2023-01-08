@@ -7,11 +7,11 @@
 class Interpreter {
 private:
 	std::shared_ptr<Node> m_Ast;
-	Error m_Error;
+	Error* m_Error;
 
 public:
-	Interpreter(Node ast, Error error)
-		: m_Ast(std::make_shared<Node>(ast)), m_Error(error) {}
+	Interpreter(Node ast, Error& error)
+		: m_Ast(std::make_shared<Node>(ast)), m_Error(&error) {}
 
 	std::shared_ptr<Number> runtime();
 

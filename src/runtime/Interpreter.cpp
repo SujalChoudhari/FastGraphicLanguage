@@ -3,13 +3,13 @@
 
 std::shared_ptr<Number> Interpreter::runtime()
 {
-	if (!m_Error.IsSafe()) return std::make_shared<Number>(-1);
+	if (!m_Error->IsSafe()) return std::make_shared<Number>(-1);
 	return m_Visit(m_Ast);
 }
 
 std::shared_ptr<Number> Interpreter::m_Visit(std::shared_ptr<Node> node)
 {
-	if (!m_Error.IsSafe()) return std::make_shared<Number>(-1);
+	if (!m_Error->IsSafe()) return std::make_shared<Number>(-1);
 	switch (node->type) {
 	case NUMBER_NODE:
 		return m_VisitNumberNode(node);
@@ -24,27 +24,20 @@ std::shared_ptr<Number> Interpreter::m_Visit(std::shared_ptr<Node> node)
 		return m_VisitUnsupported(node);
 		break;
 	}
-
-
 }
 
 std::shared_ptr<Number> Interpreter::m_VisitNumberNode(std::shared_ptr<Node> node)
 {
-	if (!m_Error.IsSafe()) return std::make_shared<Number>(-1);
-	try {
-		std::shared_ptr<Number> result;
-		result = std::make_shared<Number>(node->value.value);
-		result->setPosition(node->value.startPosition, node->value.endPosition);
-		return result;
-	}
-	catch(const std::exception& e) {
-		m_Error.InvalidSyntaxError(TOKEN_TYPE::NUMBER, node->value.value, node->value.startPosition, node->value.endPosition);
-	}
+	if (!m_Error->IsSafe()) return std::make_shared<Number>(-1);
+	std::shared_ptr<Number> result;
+	result = std::make_shared<Number>(node->value.value);
+	result->setPosition(node->value.startPosition, node->value.endPosition);
+	return result;
 }
 
 std::shared_ptr<Number> Interpreter::m_VisitBinaryOperatorNode(std::shared_ptr<Node> node)
 {
-	if (!m_Error.IsSafe()) return std::make_shared<Number>(-1);
+	if (!m_Error->IsSafe()) return std::make_shared<Number>(-1);
 	auto left = m_Visit(node->left);
 	auto right = m_Visit(node->right);
 	std::shared_ptr<Number> result;
@@ -76,7 +69,7 @@ std::shared_ptr<Number> Interpreter::m_VisitBinaryOperatorNode(std::shared_ptr<N
 
 std::shared_ptr<Number> Interpreter::m_VisitUnaryOperatorNode(std::shared_ptr<Node> node)
 {
-	if (!m_Error.IsSafe()) return std::make_shared<Number>(-1);
+	if (!m_Error->IsSafe()) return std::make_shared<Number>(-1);
 	auto number = m_Visit(node->left);
 	number->setPosition(node->value.startPosition, node->value.endPosition);
 	if (node->value.type == TOKEN_TYPE::MINUS) {

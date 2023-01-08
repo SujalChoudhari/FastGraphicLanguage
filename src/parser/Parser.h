@@ -8,10 +8,10 @@ private:
 	std::vector<Token> m_Tokens;
 	int m_TokenIndex;
 	Token* m_CurrentToken;
-	Error m_Error;
+	Error* m_Error;
 
 public:
-	Parser(std::vector<Token> tokens,Error error);
+	Parser(std::vector<Token> tokens,Error& error);
 	Node parse();
 
 private:

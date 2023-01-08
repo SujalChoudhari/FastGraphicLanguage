@@ -25,7 +25,7 @@ namespace TOKEN_TYPE {
 // CHARACTER SET
 const std::string DIGITS				= "0123456789";
 const std::string DIGITS_WITH_DECIMAL	= DIGITS + ".";
-const std::string SUPPORTED_NUMBERS		= DIGITS_WITH_DECIMAL + "_,";
+const std::string SUPPORTED_NUMBERS		= DIGITS_WITH_DECIMAL + "_,e+-";
 const std::string LOWERCASE_ALPHABETS	= "abcdefghijklmnopqrstuvwxyz";
 const std::string UPPERCASE_ALPHABETS	= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const std::string ALPHABETS				= LOWERCASE_ALPHABETS + UPPERCASE_ALPHABETS;

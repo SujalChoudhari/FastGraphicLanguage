@@ -1,13 +1,13 @@
 #include "Parser.h"
 #include "../debug/Error.h"
 
-Parser::Parser(std::vector<Token> tokens, Error error)
+Parser::Parser(std::vector<Token> tokens, Error& error)
 {
 	m_Tokens = tokens;
 	m_TokenIndex = -1;
 	m_CurrentToken = nullptr;
 	m_Advance();
-	m_Error = error;
+	m_Error = &error;
 }
 
 Token* Parser::m_Advance()
@@ -33,7 +33,7 @@ Node Parser::parse()
 
 void Parser::expression(std::shared_ptr<Node>outNode)
 {
-	if (!m_Error.IsSafe()) return;
+	if (!m_Error->IsSafe()) return;
 
 	std::shared_ptr< Node >left = std::make_shared<Node>(0, *m_CurrentToken);
 	term(left);
@@ -61,7 +61,7 @@ void Parser::expression(std::shared_ptr<Node>outNode)
 
 void Parser::term(std::shared_ptr<Node>outNode)
 {
-	if (!m_Error.IsSafe()) return;
+	if (!m_Error->IsSafe()) return;
 
 	std::shared_ptr<Node >left = std::make_shared<Node>(0, *m_CurrentToken);
 	factor(left);
@@ -85,7 +85,7 @@ void Parser::term(std::shared_ptr<Node>outNode)
 
 void Parser::factor(std::shared_ptr<Node> outNode)
 {
-	if (!m_Error.IsSafe()) return;
+	if (!m_Error->IsSafe()) return;
 
 	Token token = *m_CurrentToken;
 
@@ -113,7 +113,7 @@ void Parser::factor(std::shared_ptr<Node> outNode)
 
 void Parser::power(std::shared_ptr<Node> outNode)
 {
-	if (!m_Error.IsSafe()) return;
+	if (!m_Error->IsSafe()) return;
 
 	std::shared_ptr< Node >left = std::make_shared<Node>(0, *m_CurrentToken);
 	atom(left);
@@ -141,7 +141,7 @@ void Parser::power(std::shared_ptr<Node> outNode)
 
 void Parser::atom(std::shared_ptr<Node> outNode)
 {
-	if (!m_Error.IsSafe()) return;
+	if (!m_Error->IsSafe()) return;
 
 	Token token = *m_CurrentToken;
 
@@ -157,7 +157,7 @@ void Parser::atom(std::shared_ptr<Node> outNode)
 			outNode->value = expr->value;
 		}
 		else {
-			m_Error.InvalidSyntaxError(TOKEN_TYPE::R_PAREN, m_CurrentToken->type, m_CurrentToken->startPosition, m_CurrentToken->endPosition);
+			m_Error->InvalidSyntaxError(TOKEN_TYPE::R_PAREN, m_CurrentToken->type, m_CurrentToken->startPosition, m_CurrentToken->endPosition);
 		}
 	}
 
@@ -169,7 +169,7 @@ void Parser::atom(std::shared_ptr<Node> outNode)
 		outNode->right = nullptr;
 	}
 	else {
-		m_Error.InvalidSyntaxError("PLUS|MINUS|NUMBER|L_PAREN", token.type, token.startPosition, token.endPosition);
+		m_Error->InvalidSyntaxError("PLUS|MINUS|NUMBER|L_PAREN", token.type, token.startPosition, token.endPosition);
 	}
 }
 

@@ -77,7 +77,7 @@ void Lexer::m_Tokenize()
 			m_Advance();
 		}
 		else {
-			m_Error.InvalidCharacterError(m_CurrentChar, m_Position);
+			m_Error->InvalidCharacterError(m_CurrentChar, m_Position);
 			m_Advance();
 		}
 	}
@@ -93,7 +93,7 @@ void Lexer::m_TokenizeDigits()
 	while (SUPPORTED_NUMBERS.find(m_CurrentChar) != std::string::npos) {
 		if (m_CurrentChar == '.') {
 			if (decimalCount == 1) {
-				m_Error.MultipleDecimalError(m_Position);
+				m_Error->MultipleDecimalError(m_Position);
 			}
 			else {
 				decimalCount++;

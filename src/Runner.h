@@ -21,6 +21,7 @@ struct Runner {
 		Parser parser = Parser(lexer.getTokens(), error);
 		Node ast = parser.parse();
 
+
 		if (!error.IsSafe()) return;
 
 		Interpreter interpreter(ast, error);
